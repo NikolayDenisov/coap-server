@@ -11,3 +11,6 @@ __pypackages__/
 
 # Environments
 venv/
+
+# Pycharm
+.idea
