@@ -1,1 +1,2 @@
-# coap-server
+###  COAP server for openthread network
+
