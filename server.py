@@ -10,24 +10,18 @@ class ActiveThing(resource.Resource):
     https://coap.whoisdeveloper.ru/things
     Activates a thing with an activation code. The result is a thing token.
     """
+
     @staticmethod
     async def render_post(request):
-        text = ["Used protocol: %s." % request.remote.scheme]
-
-        text.append("Request came from %s." % request.remote.hostinfo)
-        text.append("The server address used %s." % request.remote.hostinfo_local)
-
-        claims = list(request.remote.authenticated_claims)
-        if claims:
-            text.append("Authenticated claims of the client: %s." % ", ".join(repr(c) for c in claims))
-        else:
-            text.append("No claims authenticated.")
-
+        logging.info(request.remote.hostinfo)
+        payload = request.payload.decode('utf8')
+        logging.info(payload)
+        text = "Hello world"
         return aiocoap.Message(content_format=0,
-                               payload="\n".join(text).encode('utf8'))
+                               payload=text.encode('utf8'))
 
 
-class ThingWrite(resource.Resource):
+class ThingWrite(resource.Resource, resource.PathCapable):
     """
     https://coap.whoisdeveloper.ru/things/{THING_TOKEN}
     Writes the records of data from the thing to the specified THING_TOKEN.
@@ -35,8 +29,15 @@ class ThingWrite(resource.Resource):
     """
 
     async def render_post(self, request):
-        pass
-
+        device_token = request.opt.uri_path[0]
+        dev_ip_addr = request.remote.sockaddr[0]
+        uri_query = request.opt.uri_query
+        logging.info(f'Receive token {device_token}, dev_ip_addr {dev_ip_addr}, uri_query {uri_query}')
+        payload = request.payload.decode('utf8')
+        logging.info(payload)
+        text = "Hello world"
+        return aiocoap.Message(content_format=0,
+                               payload=text.encode('utf8'))
 
 class ThingRead(resource.Resource):
     """
@@ -81,6 +82,7 @@ async def main():
     root = resource.Site()
 
     root.add_resource(['things'], ActiveThing())
+    root.add_resource(['things'], ThingWrite())
 
     await aiocoap.Context.create_server_context(root, bind=("0.0.0.0", 1222))
 
