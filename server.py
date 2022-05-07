@@ -15,10 +15,16 @@ class ActiveThing(resource.Resource):
     async def render_post(request):
         logging.info(request.remote.hostinfo)
         payload = request.payload.decode('utf8')
+        parse_payload(payload)
         logging.info(payload)
         text = "Hello world"
-        return aiocoap.Message(content_format=0,
+        return aiocoap.Message(code=aiocoap.CREATED,
                                payload=text.encode('utf8'))
+
+    @staticmethod
+    async def parse_payload(data):
+        printf(f"data {data}")
+
 
 
 class ThingWrite(resource.Resource, resource.PathCapable):
