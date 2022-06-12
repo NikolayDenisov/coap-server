@@ -4,6 +4,8 @@ import logging
 import aiocoap
 import aiocoap.resource as resource
 
+SERVER_HOST = '0.0.0.0'
+SERVER_PORT = '1222'
 
 class ActiveThing(resource.Resource):
     """
@@ -15,13 +17,10 @@ class ActiveThing(resource.Resource):
     async def render_post(request):
         logging.info(request.remote.hostinfo)
         payload = request.payload.decode('utf8')
-        parse_payload(payload)
         logging.info(payload)
         text = "Hello world"
-        return aiocoap.Message(code=aiocoap.CREATED,
+        return aiocoap.Message(content_format=0,
                                payload=text.encode('utf8'))
-
-
 
 
 class ThingWrite(resource.Resource, resource.PathCapable):
@@ -33,16 +32,14 @@ class ThingWrite(resource.Resource, resource.PathCapable):
 
     async def render_post(self, request):
         device_token = request.opt.uri_path[0]
-        if not device_token:
-            return aiocoap.Message(code=aiocoap.UNAUTHORIZED)
         dev_ip_addr = request.remote.sockaddr[0]
         uri_query = request.opt.uri_query
         logging.info(f'Receive token {device_token}, dev_ip_addr {dev_ip_addr}, uri_query {uri_query}')
         payload = request.payload.decode('utf8')
         logging.info(payload)
-        return aiocoap.Message(code=aiocoap.CREATED,
-                               payload=payload.encode('utf8'))
-
+        text = "Hello world"
+        return aiocoap.Message(content_format=0,
+                               payload=text.encode('utf8'))
 
 class ThingRead(resource.Resource):
     """
@@ -84,16 +81,16 @@ logging.getLogger("coap-server").setLevel(logging.DEBUG)
 
 async def main():
     # Resource tree creation
-    site = resource.Site()
+    root = resource.Site()
 
-    site.add_resource(['things'], ActiveThing())
-    site.add_resource(['things'], ThingWrite())
+    root.add_resource(['things'], ActiveThing())
+    root.add_resource(['things'], ThingWrite())
 
-    await aiocoap.Context.create_server_context(site, bind=("0.0.0.0", 1222))
+    await aiocoap.Context.create_server_context(root, bind=(SERVER_HOST, SERVER_PORT))
 
     # Run forever
     await asyncio.get_running_loop().create_future()
 
 
-if __name__ == "__main__":
+if name == "main":
     asyncio.run(main())
