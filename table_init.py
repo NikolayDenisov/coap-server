@@ -1,3 +1,5 @@
+from config import user, password
+
 timescaledb_init = "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;"
 
 query_create_sensors_table = "CREATE TABLE sensors (id SERIAL PRIMARY KEY," \
@@ -10,3 +12,5 @@ query_create_sensordata_table = "CREATE TABLE sensor_data (" \
                                 "temperature DOUBLE PRECISION," \
                                 "FOREIGN KEY (sensor_id) REFERENCES sensors (id)" \
                                 ");"
+
+query_change_user_password = f'ALTER USER {user} WITH PASSWORD {password};'

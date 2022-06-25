@@ -1,5 +1,5 @@
 import psycopg2
-
+from config import CONNECTION
 
 def create_tables(conn):
     query_create_sensors_table = "CREATE TABLE sensors (id SERIAL PRIMARY KEY, type VARCHAR(50), eui64 VARCHAR(50));"
@@ -27,8 +27,22 @@ def write(conn, sensor_data):
         print(error.pgerror)
     conn.commit()
 
-def write_data(conn, sensor_data):
-    sql_data_insert = "INSERT INTO sensor_data(time, sensor_id, temperature) VALUES(%s, %s, %s)"
+def write_data(sensor_data):
+    sql_data_insert = "INSERT INTO sensor_data(time, sensor_id, temperature) VALUES(now(), %s, %s)"
+
+def write_temp(payload):
+    with psycopg2.connect(CONNECTION) as conn:
+        try:
+            cursor = conn.cursor()
+            sql_data_insert = "INSERT INTO sensor_data(time, sensor_id, temperature) VALUES(now(), 1, %s);"
+            cursor.execute(sql_data_insert, (payload,))
+        except Exception as error:
+            print(error)
+        conn.commit()
+
+
+
+
 
 
 def main():

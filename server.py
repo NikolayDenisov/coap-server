@@ -5,6 +5,8 @@ import json
 import aiocoap
 import aiocoap.resource as resource
 
+from db.db import write_temp
+
 
 class ActiveThing(resource.Resource):
     """
@@ -40,7 +42,11 @@ class ThingWrite(resource.Resource, resource.PathCapable):
         uri_query = request.opt.uri_query
         logging.info(f'Receive token {device_token}, dev_ip_addr {dev_ip_addr}, uri_query {uri_query}')
         payload = request.payload.decode('utf8')
-        logging.info(payload)
+        # convert string to  object
+        json_object = json.loads(payload)
+        for data in json_object['values']:
+            if data['key'] == 'temp':
+                write_temp(data['value'])
         return aiocoap.Message(code=aiocoap.CREATED,
                                payload=payload.encode('utf8'))
 

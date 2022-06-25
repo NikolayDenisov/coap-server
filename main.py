@@ -1,21 +1,16 @@
-from config import CONNECTION
-import psycopg2
-from datetime import datetime
+# This is a sample Python script.
 
-def print_table_values(conn, table, funct, param):
-    cursor = conn.cursor()
-    if funct == 'first':
-        cursor.execute("SELECT " + param[0] + ", first(" + param[1] + ", time) FROM " + table + " GROUP BY " + param[0] + ";")
-    elif funct == 'last':
-        cursor.execute("SELECT " + param[0] + ", last(" + param[1] + ", time) FROM " + table + " GROUP BY " + param[0] + ";")
-    elif funct == 'all':
-        cursor.execute("SELECT * FROM " + table + ";")
-    elif funct == 'count':
-        cursor.execute("ANALYZE " + table + "; SELECT * FROM approximate_row_count('" + table + "');")
-    for row in cursor.fetchall():
-        print(row)
-    cursor.close()
+# Press ⌃R to execute it or replace it with your code.
+# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
+
+def print_hi(name):
+    # Use a breakpoint in the code line below to debug your script.
+    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+
+
+# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    conn = psycopg2.connect(CONNECTION)
-    print_table_values(conn, 'sensor_data', 'count', ['sensor_id', 'temperature'])
+    print_hi('PyCharm')
+
+# See PyCharm help at https://www.jetbrains.com/help/pycharm/
